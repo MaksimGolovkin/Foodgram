@@ -135,6 +135,10 @@ jobs:
         # с которым установлено соединение
         script: |
           cd foodgram/infra
+          cp docker-compose.yml ..
+          cp nginx.conf ..
+          cd ..
+          sudo rm -r infra/
           # Выполняет pull образов с Docker Hub
           sudo docker compose pull
           # Перезапускает все контейнеры в Docker Compose
