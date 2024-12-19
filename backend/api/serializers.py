@@ -8,13 +8,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
 
 from api.constant import WRONGUSERNAME
-from recipes.models import (Favorite,
-                            Ingredients,
-                            IngredientsRecipe,
-                            Recipe,
-                            ShoppingList,
-                            Tags,
-                            TagsRecipe)
+from recipes.models import (Favorite, Ingredients, IngredientsRecipe, Recipe,
+                            ShoppingList, Tags, TagsRecipe)
 from user.models import Follow, User
 
 

@@ -8,26 +8,20 @@ from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (SAFE_METHODS,
-                                        AllowAny,
+from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from api.filters import IngredientSearchFilter, RecipeFilter
 from api.permissions import AnonimOrAuthenticatedReadOnly, IsAuthorOrReadOnly
-from api.serializers import (FavoriteSerializer,
-                             FollowSerializer,
-                             FollowShowSerialize,
-                             IngredientsSerializer,
-                             RecipeFavoriteSerializer,
-                             RecipeSerializerGET,
+from api.serializers import (FavoriteSerializer, FollowSerializer,
+                             FollowShowSerialize, IngredientsSerializer,
+                             RecipeFavoriteSerializer, RecipeSerializerGET,
                              RecipeSerializerPOST,
                              RecipeShoppingListSerializer,
-                             ShoppingListSerializer,
-                             TagsSerializer,
-                             UserAvatar,
-                             UserCastomSerializer)
+                             ShoppingListSerializer, TagsSerializer,
+                             UserAvatar, UserCastomSerializer)
 from recipes.models import Favorite, Ingredients, Recipe, ShoppingList, Tags
 from user.models import Follow, User
 

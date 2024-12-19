@@ -1,11 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from api.constant import (MAX_LEN_CHARFIELD,
-                          MAX_LEN_MINI,
-                          MAX_LEN_SLUGFIELD,
-                          MIN_SCORE,
-                          UNIT_MEASUREMENT)
+from api.constant import (MAX_LEN_CHARFIELD, MAX_LEN_MINI, MAX_LEN_SLUGFIELD,
+                          MIN_SCORE, UNIT_MEASUREMENT)
 from user.models import User
 
 
