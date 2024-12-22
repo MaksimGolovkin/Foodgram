@@ -323,7 +323,6 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Для создания рецептов."""
-        # author = self.context.get('request').user
         tags_data = validated_data.pop('tags')
         ingredients_data = validated_data.pop('ingredients')
         recipe = super().create(validated_data)
