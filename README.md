@@ -7,7 +7,7 @@
 
 #### Доступен по адресу - https://foodgramishe.hopto.org/
 ## Для входа в админку:
-    - login: root
+    - email: root@root.ru
     - password: rootroot
 
 ### Стек применяемых технологий:
