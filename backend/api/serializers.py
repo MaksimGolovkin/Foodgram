@@ -282,6 +282,18 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
                   'name', 'text', 'cooking_time',)
         model = Recipe
 
+    @staticmethod
+    def add_ingredients(ingredients_data, recipe):
+        """Добавляет ингредиенты."""
+        IngredientsRecipe.objects.bulk_create([
+            IngredientsRecipe(
+                ingredient=ingredient.get('id'),
+                recipe=recipe,
+                amount=ingredient.get('amount')
+            )
+            for ingredient in ingredients_data
+        ])
+
     def validate_ingredients(self, value):
         ingredients = value
         if not ingredients:
@@ -311,42 +323,31 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Для создания рецептов."""
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        # author = self.context.get('request').user
+        tags_data = validated_data.pop('tags')
+        ingredients_data = validated_data.pop('ingredients')
         recipe = super().create(validated_data)
-        for ingredient_data in ingredients:
-            ingredient_id = ingredient_data.get('id')
-            amount = ingredient_data.get('amount')
-            IngredientsRecipe.objects.update_or_create(
-                ingredient=ingredient_id,
-                recipe=recipe,
-                amount=amount,
-            )
-        recipe.tags.set(tags)
+        recipe.tags.set(tags_data)
+        self.add_ingredients(ingredients_data, recipe)
         return recipe
 
     def update(self, instance, validated_data):
         """Для обновления рецептов."""
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get(
-            'cooking_time', instance.cooking_time)
+        recipe = instance
         instance.image = validated_data.get('image', instance.image)
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.name)
+        instance.cooking_time = validated_data.get(
+            'cooking_time', instance.cooking_time
+        )
+        instance.tags.clear()
+        instance.ingredients.clear()
+        tags_data = validated_data.get('tags')
+        instance.tags.set(tags_data)
+        ingredients_data = validated_data.get('ingredients')
+        IngredientsRecipe.objects.filter(recipe=recipe).delete()
+        self.add_ingredients(ingredients_data, recipe)
         instance.save()
-        if ingredients is not None:
-            instance.ingredients.set(ingredients)
-            for ingredient_data in ingredients:
-                ingredient_id = ingredient_data.get('id')
-                amount = ingredient_data.get('amount')
-                IngredientsRecipe.objects.update_or_create(
-                    ingredient=ingredient_id,
-                    recipe=instance,
-                    amount=amount,
-                )
-        if tags is not None:
-            instance.tags.set(tags)
         return instance
 
     def to_representation(self, recipe):

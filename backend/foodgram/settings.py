@@ -59,6 +59,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+
 if os.getenv('SQLITE3_VALUE', 'False').lower() == 'true':
     DATABASES = {
         'default': {
