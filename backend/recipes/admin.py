@@ -81,4 +81,3 @@ class TagsRecipetAdmin(admin.ModelAdmin):
 
     list_display = ('id', 'name', 'recipe')
     list_filter = ('name', 'recipe')
-
