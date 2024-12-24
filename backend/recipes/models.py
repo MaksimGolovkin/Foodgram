@@ -6,7 +6,9 @@ from api.constant import (MAX_LEN_CHARFIELD, MAX_LEN_MINI, MAX_LEN_SLUGFIELD,
 from user.models import User
 
 
-class Tags(models.Model):
+class Tag(models.Model):
+    """Модель Тэгов."""
+
     name = models.CharField(
         max_length=MAX_LEN_CHARFIELD,
         verbose_name='Название'
@@ -25,7 +27,9 @@ class Tags(models.Model):
         return self.name
 
 
-class Ingredients(models.Model):
+class Ingredient(models.Model):
+    """Модель Ингредиентов."""
+
     name = models.CharField(
         max_length=MAX_LEN_CHARFIELD,
         verbose_name='Наименование'
@@ -39,12 +43,19 @@ class Ingredients(models.Model):
     class Meta:
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
+        ordering = ('name',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name', 'measurement_unit'),
+                name='unique_ingredient')]
 
     def __str__(self):
         return self.name
 
 
 class Recipe(models.Model):
+    """Модель Рецептов."""
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -60,7 +71,6 @@ class Recipe(models.Model):
     image = models.ImageField(
         upload_to='recipes/images/',
         null=True,
-        blank=True,
         default=None,
         verbose_name='Картинка',
     )
@@ -68,18 +78,18 @@ class Recipe(models.Model):
         verbose_name='Описание'
     )
     ingredients = models.ManyToManyField(
-        Ingredients,
+        Ingredient,
         through='IngredientsRecipe',
         verbose_name='Ингредиенты для рецепта',
         related_name='recipes',
     )
     tags = models.ManyToManyField(
-        Tags,
+        Tag,
         through='TagsRecipe',
         verbose_name='Теги для рецепта',
         related_name='recipes',
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(
             MIN_SCORE,
             message=f'Минимальное время приготовления {MIN_SCORE} мин.')],
@@ -107,8 +117,10 @@ class Recipe(models.Model):
 
 
 class IngredientsRecipe(models.Model):
+    """Связанная модель Ингредиентов и Рецептов."""
+
     ingredient = models.ForeignKey(
-        Ingredients,
+        Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
     )
@@ -118,7 +130,7 @@ class IngredientsRecipe(models.Model):
         verbose_name='Название рецепта',
         related_name='recipe_ingredients',
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(
             MIN_SCORE,
             message=f'Минимальное количество {MIN_SCORE}.')],
@@ -138,8 +150,10 @@ class IngredientsRecipe(models.Model):
 
 
 class TagsRecipe(models.Model):
+    """Связанная модель Тэгов и Рецептов."""
+
     name = models.ForeignKey(
-        Tags,
+        Tag,
         on_delete=models.CASCADE,
         verbose_name='Тег',
     )
@@ -158,17 +172,19 @@ class TagsRecipe(models.Model):
 
 
 class Favorite(models.Model):
+    """Модель Избранного."""
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        related_name='favorite'
+        related_name='favorites'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='favorite'
+        related_name='favorites'
     )
 
     class Meta:
@@ -184,18 +200,19 @@ class Favorite(models.Model):
 
 
 class ShoppingList(models.Model):
+    """Модель Списка покупок."""
 
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        related_name='shopping_list'
+        related_name='shopping_lists'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='shopping_list'
+        related_name='shopping_lists'
     )
 
     class Meta:

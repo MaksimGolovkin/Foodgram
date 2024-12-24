@@ -30,3 +30,5 @@ ROLE_USER = [
     (USER, 'Пользователь'),
     (ADMIN, 'Администратор')
 ]
+PAGINATOR_PAGE_SIZE = 6
+PAGE_SIZE = 100

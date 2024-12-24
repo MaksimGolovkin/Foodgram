@@ -5,8 +5,8 @@
 ### Описание проекта:
 #### Foodgram, «Продуктовый помощник». Онлайн-сервис и API для него. На этом сервисе пользователи публикуют свои рецепты, подписываются на публикации других пользователей, добавляют понравившиеся рецепты в список «Избранное», а перед походом в магазин могут скачать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
-#### Доступен по адресу - https://foodgramishe.hopto.org/
-## Для входа в админку:
+### Развернутый проект доступен по [ссылке](https://foodgramishe.hopto.org/)
+### Данные для входа в админку по [ссылке](https://foodgramishe.hopto.org/admin/):
     - email: root@root.ru
     - password: rootroot
 
@@ -78,13 +78,16 @@
 
 8. Заполните базу данных некоторыми тестовыми данными ингредиентов:
 ```
-    python manage.py import_data
+    python manage.py import_ingredients
+    python manage.py import_tags
 ```
 
 9. Запустить локальный сервер:
 ```
     python manage.py runserver
 ```
+#### Документация доступна по ссылке: http://localhost:3000/api/docs/
+
 #### _Для локальной развертки более ничего не требуется, перейдите по адресу_
 __
 
@@ -98,15 +101,19 @@ __
 
 2. Создать Docker-образ для контейнеров:
 ```
-    cd infra
-    docker build -t USERNAME/foodgram
+    cd backend
+    docker build -t USERNAME/foodgram_backend .
+    cd ..
+    cd frontend
+    docker build -t USERNAME/foodgram_frontend .
 ```
 Вместо USERNAME вставить свой логин на DockerHub.
 
 3. Запушить образы на DockerHub
 
 ```
-    docker push USERNAME/foodgram
+    docker push USERNAME/foodgram_backend
+    docker push USERNAME/foodgram_frontend
 ```
 Вместо USERNAME вставить свой логин на DockerHub.
 
@@ -129,9 +136,9 @@ __
     sudo apt install docker-compose
 ```
 
-7. Скопируйте файлы "docker-compose.production.yml" и ".env" в директорию foodgram/ на сервере:
+7. Скопируйте файлы "docker-compose.yml" и ".env" в директорию foodgram/ на сервере:
 ```
-    scp -i PATH_TO_SSH_KEY/SSH_KEY_NAME docker-compose.production.yml YOUR_USERNAME@SERVER_IP_ADDRESS:/home/YOUR_USERNAME/foodgram/docker-compose.production.yml
+    scp -i PATH_TO_SSH_KEY/SSH_KEY_NAME docker-compose.production.yml YOUR_USERNAME@SERVER_IP_ADDRESS:/home/YOUR_USERNAME/foodgram/infra/docker-compose.yml
 ```
         - 'PATH_TO_SSH_KEY' - путь к файлу с вашим SSH-ключом
         - 'SSH_KEY_NAME' - имя файла с вашим SSH-ключом
@@ -161,13 +168,15 @@ __
 
 8. Запустите контейнеры, перейдя в корневую директорию, командой:
 ```
-    sudo docker compose -f docker-compose.production.yml up -d
+    sudo docker compose up -d
 ```
-9. Примените миграции, соберите статику бэкенда и скопируйте для раздачи:
+9. Примените миграции, соберите статику бэкенда, скопируйте ее для раздачи и заполните БД данными с помощью скрипта:
 ```
-    sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
-    sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-    sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+    sudo docker compose exec backend python manage.py migrate
+    sudo docker compose exec backend python manage.py collectstatic
+    sudo docker compose exec backend cp -r /app/collected_static/. /backend_static/static/
+    sudo docker compose exec backend python manage.py import_ingredients
+    sudo docker compose exec backend python manage.py import_tags
 ```
 10. Откройте конфигурационный файл Nginx в редакторе nano:
 ```

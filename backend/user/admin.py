@@ -12,22 +12,19 @@ class UserAdmin(BaseUserAdmin):
     """Админская конфигурация для управления Пользователями."""
 
     form = UserChangeForm
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (None, {'fields': ('role',)}),
-    )
     list_display = ('id', 'username', 'first_name',
-                    'last_name', 'email', 'role')
+                    'last_name', 'email')
     search_fields = ('username', 'email')
     list_filter = ('username', 'email',)
-    list_editable = ('role',)
 
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     """Админ-зона подписок."""
+
     list_display = ('pk', 'subscriber', 'author')
     list_editable = ('subscriber', 'author')
-    search_fields = ('subscriber',)
+    search_fields = ('subscriber__username', 'subscriber__email')
     list_filter = ('subscriber',)
 
 

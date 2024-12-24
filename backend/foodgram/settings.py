@@ -3,6 +3,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from api.constant import PAGINATOR_PAGE_SIZE
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,13 +22,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
+    'djoser',
+    'rest_framework',
+    'rest_framework.authtoken',
     'api.apps.ApiConfig',
     'user.apps.UserConfig',
     'recipes.apps.RecipesConfig',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -116,20 +118,23 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+CSV_DIR = os.path.join(BASE_DIR, 'data')
+CSV_FILE_INGREDIENTS = os.path.join(CSV_DIR, 'ingredients.csv')
+CSV_FILE_TAGS = os.path.join(CSV_DIR, 'tags.csv')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
 
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 6,
+    'PAGE_SIZE': PAGINATOR_PAGE_SIZE,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',

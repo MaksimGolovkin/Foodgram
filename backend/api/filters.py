@@ -1,13 +1,13 @@
 from django_filters import rest_framework as filters
 
-from recipes.models import Ingredients, Recipe
+from recipes.models import Ingredient, Recipe
 
 
 class IngredientSearchFilter(filters.FilterSet):
     name = filters.CharFilter(lookup_expr='istartswith')
 
     class Meta:
-        model = Ingredients
+        model = Ingredient
         fields = ('name',)
 
 
@@ -21,16 +21,15 @@ class RecipeFilter(filters.FilterSet):
         model = Recipe
         fields = ('tags', 'author',)
 
+    def is_user_authenticated(self):
+        return self.request.user.is_authenticated
+
     def filter_is_favorited(self, queryset, name, value):
-        user = self.request.user
-        if user.is_authenticated:
-            if value:
-                return queryset.filter(favorite__author=self.request.user)
+        if self.is_user_authenticated() and value:
+            return queryset.filter(favorites__author=self.request.user)
         return queryset
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        user = self.request.user
-        if user.is_authenticated:
-            if value:
-                return queryset.filter(shopping_list__author=self.request.user)
+        if self.is_user_authenticated() and value:
+            return queryset.filter(shopping_lists__author=self.request.user)
         return queryset

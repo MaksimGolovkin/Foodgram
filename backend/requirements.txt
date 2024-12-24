@@ -27,3 +27,4 @@ urllib3==1.26.20
 psycopg2-binary==2.9.3
 django-filter==23.1
 isort==5.13.2
+tqdm==4.67.1
