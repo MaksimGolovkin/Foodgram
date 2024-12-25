@@ -196,7 +196,7 @@ class Favorite(models.Model):
             models.UniqueConstraint(
                 fields=('author', 'recipe'),
                 name='unique_favorite'
-            ),]
+            )]
 
     def __str__(self):
         return f'У пользователя {self.author} в избранном: {self.recipe}'
@@ -225,7 +225,7 @@ class ShoppingList(models.Model):
             models.UniqueConstraint(
                 fields=('author', 'recipe'),
                 name='unique_shopping_list'
-            ),]
+            )]
 
     def __str__(self):
         return f'У пользователя {self.author} в списке покупок: {self.recipe}'
