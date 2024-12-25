@@ -4,10 +4,10 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from api.views import (IngredientsViewSet, RecipeViewSet, TagsViewSet,
-                       UserCustomViewSet)
+                       UserViewSet)
 
 router = DefaultRouter()
-router.register('users', UserCustomViewSet, basename='users')
+router.register('users', UserViewSet, basename='users')
 router.register('recipes', RecipeViewSet, basename='recipes')
 router.register('tags', TagsViewSet, basename='tags')
 router.register('ingredients', IngredientsViewSet, basename='ingredients')

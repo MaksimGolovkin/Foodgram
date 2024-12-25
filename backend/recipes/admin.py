@@ -29,6 +29,7 @@ class IngredientsInline(admin.TabularInline):
 
     model = IngredientsRecipe
     extra = 1
+    min_num = 1
 
 
 @admin.register(Recipe)
@@ -38,7 +39,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'author', 'text',
                     'cooking_time', 'image',
                     'pub_date')
-    inlines = [IngredientsInline, ]
+    inlines = [IngredientsInline,]
     list_filter = ('author', 'name', 'tags')
     list_editable = ('author',)
     search_fields = ('subscriber__username', 'subscriber__email')

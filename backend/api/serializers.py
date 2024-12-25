@@ -10,7 +10,7 @@ from recipes.models import (Favorite, Ingredient, IngredientsRecipe, Recipe,
 from user.models import Follow, User
 
 
-class UserCastomSerializer(UserSerializer):
+class UserFoodgramSerializer(UserSerializer):
     """Сериализатор для отображения пользователя."""
 
     is_subscribed = serializers.SerializerMethodField()
@@ -37,7 +37,7 @@ class UserAvatar(serializers.ModelSerializer):
         model = User
 
 
-class UserCustomCreateSerializer(UserSerializer):
+class UserFoodgramCreateSerializer(UserSerializer):
     """Сериализатор для создания пользователя."""
 
     class Meta:
@@ -94,22 +94,17 @@ class ShowFollowRecipesSerializer(serializers.ModelSerializer):
         model = Recipe
 
 
-class FollowShowSerialize(UserCastomSerializer):
+class FollowShowSerializer(UserFoodgramSerializer):
     """Сериализатор отображения подписок."""
 
-    is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipes', 'recipes_count', 'avatar',)
-
-    def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        return user.is_authenticated and Follow.objects.filter(
-            subscriber=user, author=obj).exists()
+        fields = UserFoodgramSerializer.Meta.fields + (
+            'recipes', 'recipes_count',
+        )
 
     def get_recipes(self, obj):
         request = self.context.get('request')
@@ -147,10 +142,11 @@ class FollowSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        return FollowShowSerialize(
+        serializer = FollowShowSerializer(
             instance.author,
             context=self.context,
-        ).data
+        )
+        return serializer.data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -167,12 +163,11 @@ class FavoriteSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        return {
-            'id': instance.recipe.id,
-            'name': instance.recipe.name,
-            'image': instance.recipe.image,
-            'cooking_time': instance.recipe.cooking_time,
-        }
+        serializer = FavoriteAndShoppingCartSerializer(
+            instance,
+            context=self.context
+        )
+        return serializer.data
 
 
 class ShoppingListSerializer(serializers.ModelSerializer):
@@ -189,18 +184,11 @@ class ShoppingListSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        return {
-            'id': instance.recipe.id,
-            'name': instance.recipe.name,
-        }
-
-
-class RecipeShoppingListSerializer(serializers.ModelSerializer):
-    """Сериализатор для списка покупок рецептов."""
-
-    class Meta:
-        model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')
+        serializer = FavoriteAndShoppingCartSerializer(
+            instance,
+            context=self.context
+        )
+        return serializer.data
 
 
 class TagsSerializer(serializers.ModelSerializer):
@@ -248,7 +236,7 @@ class IngredientsRecipeSerializerGET(serializers.ModelSerializer):
 class RecipeSerializerGET(serializers.ModelSerializer):
     """Сериализатор для чтения рецептов."""
 
-    author = UserCastomSerializer()
+    author = UserFoodgramSerializer()
     ingredients = IngredientsRecipeSerializerGET(
         required=True, many=True, source='recipe_ingredients',)
     tags = TagsSerializer(many=True, read_only=True)
@@ -283,12 +271,12 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
     """Сериализатор для создания рецептов."""
 
     image = Base64ImageField(required=True)
-    author = UserCastomSerializer(read_only=True)
+    author = UserFoodgramSerializer(read_only=True)
     ingredients = IngredientsRecipeSerializerPOST(
         many=True, write_only=True)
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
-        many=True
+        many=True,
     )
 
     class Meta:
@@ -297,19 +285,19 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
         model = Recipe
 
     @staticmethod
-    def add_ingredients_and_tags(validated_data, recipe):
+    def add_ingredients_and_tags(ingredients, tags, recipe):
         """Добавляет ингредиенты."""
-        ingredients_data = validated_data.pop('ingredients', [])
-        tags_data = validated_data.pop('tags', [])
+        ingredients_data = ingredients
+        tags_data = tags
         recipe.tags.set(tags_data)
-        IngredientsRecipe.objects.bulk_create([
+        IngredientsRecipe.objects.bulk_create(
             IngredientsRecipe(
                 ingredient=ingredient.get('id'),
                 recipe=recipe,
                 amount=ingredient.get('amount')
             )
             for ingredient in ingredients_data
-        ])
+        )
 
     def validate(self, value):
         tags = value.get('tags')
@@ -335,15 +323,15 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Для создания рецептов."""
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(
             author=self.context.get('request').user,
-            image=validated_data.pop('image'),
-            name=validated_data.pop('name'),
-            text=validated_data.pop('text'),
-            cooking_time=validated_data.pop('cooking_time'),
+            **validated_data,
         )
         self.add_ingredients_and_tags(
-            validated_data,
+            ingredients,
+            tags,
             recipe
         )
         return recipe
@@ -352,8 +340,11 @@ class RecipeSerializerPOST(serializers.ModelSerializer):
         """Для обновления рецептов."""
         instance.ingredients.clear()
         instance.tags.clear()
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
         self.add_ingredients_and_tags(
-            validated_data,
+            ingredients,
+            tags,
             instance,
         )
         return super().update(instance, validated_data)

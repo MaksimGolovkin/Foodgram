@@ -13,14 +13,14 @@ from rest_framework.permissions import (SAFE_METHODS, AllowAny,
 from rest_framework.response import Response
 
 from api.filters import IngredientSearchFilter, RecipeFilter
-from api.paginators import CustomPagination
+from api.paginators import FoodgramPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FavoriteAndShoppingCartSerializer,
                              FavoriteSerializer, FollowSerializer,
-                             FollowShowSerialize, IngredientsSerializer,
+                             FollowShowSerializer, IngredientsSerializer,
                              RecipeSerializerGET, RecipeSerializerPOST,
                              ShoppingListSerializer, TagsSerializer,
-                             UserAvatar, UserCastomSerializer)
+                             UserAvatar, UserFoodgramSerializer)
 from api.utils import dowload_shoppig_list
 from recipes.models import Ingredient, IngredientsRecipe, Recipe, Tag
 from user.models import Follow, User
@@ -128,11 +128,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .values('ingredient__name', 'ingredient__measurement_unit')
             .annotate(total_amount=Sum('amount'))
         )
-        if not ingredients:
-            return Response(
-                {'message': 'Список покупок пуст.'},
-                status=status.HTTP_204_NO_CONTENT
-            )
         return dowload_shoppig_list(self, request, ingredients)
 
 
@@ -167,13 +162,13 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
 
 
-class UserCustomViewSet(UserViewSet):
+class UserViewSet(UserViewSet):
     """Представление пользователя."""
 
     queryset = User.objects.all()
-    serializer_class = UserCastomSerializer
+    serializer_class = UserFoodgramSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    pagination_class = CustomPagination
+    pagination_class = FoodgramPagination
 
     @action(
         methods=['GET'],
@@ -244,7 +239,7 @@ class UserCustomViewSet(UserViewSet):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            author_serializer = FollowShowSerialize(
+            author_serializer = FollowShowSerializer(
                 author, context={'request': request}
             )
             return Response(

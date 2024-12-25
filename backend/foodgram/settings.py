@@ -26,9 +26,9 @@ INSTALLED_APPS = [
     'djoser',
     'rest_framework',
     'rest_framework.authtoken',
-    'api.apps.ApiConfig',
     'user.apps.UserConfig',
     'recipes.apps.RecipesConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -147,9 +147,9 @@ DJOSER = {
     # Для возвращения по пойнту /users/ всех объектов
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user': 'api.serializers.UserCastomSerializer',
-        'current_user': 'api.serializers.UserCastomSerializer',
-        'user_create': 'api.serializers.UserCustomCreateSerializer',
+        'user': 'api.serializers.UserFoodgramSerializer',
+        'current_user': 'api.serializers.UserFoodgramSerializer',
+        'user_create': 'api.serializers.UserFoodgramCreateSerializer',
     },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
