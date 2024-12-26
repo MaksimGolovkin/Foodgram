@@ -3,8 +3,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from api.constant import PAGINATOR_PAGE_SIZE
-
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -132,9 +130,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
-
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': PAGINATOR_PAGE_SIZE,
 }
 
 
