@@ -13,7 +13,7 @@ from rest_framework.permissions import (SAFE_METHODS, AllowAny,
 from rest_framework.response import Response
 
 from api.filters import IngredientSearchFilter, RecipeFilter
-# from api.paginators import FoodgramPagination
+from api.paginators import FoodgramPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FavoriteAndShoppingCartSerializer,
                              FavoriteSerializer, FollowSerializer,
@@ -30,7 +30,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Представление Рецептов."""
 
     queryset = Recipe.objects.all()
-    # pagination_class = FoodgramPagination
+    pagination_class = FoodgramPagination
     permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -168,7 +168,7 @@ class UserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserFoodgramSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    # pagination_class = FoodgramPagination
+    pagination_class = FoodgramPagination
 
     @action(
         methods=['GET'],
