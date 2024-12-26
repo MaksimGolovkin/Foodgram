@@ -31,4 +31,4 @@ ROLE_USER = [
     (ADMIN, 'Администратор')
 ]
 PAGINATOR_PAGE_SIZE = 6
-PAGE_SIZE = 100
+MAX_PAGE_SIZE = 10
