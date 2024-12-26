@@ -13,7 +13,7 @@ from rest_framework.permissions import (SAFE_METHODS, AllowAny,
 from rest_framework.response import Response
 
 from api.filters import IngredientSearchFilter, RecipeFilter
-from api.paginators import FoodgramPagination
+# from api.paginators import FoodgramPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (FavoriteAndShoppingCartSerializer,
                              FavoriteSerializer, FollowSerializer,
