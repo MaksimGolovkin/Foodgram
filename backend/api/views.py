@@ -30,7 +30,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Представление Рецептов."""
 
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializerGET
     pagination_class = FoodgramPagination
     permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
@@ -146,8 +145,8 @@ class TagsViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagsSerializer
     http_method_names = ('get',)
-    pagination_class = None
     permission_classes = (AllowAny,)
+    pagination_class = None
 
 
 class IngredientsViewSet(viewsets.ModelViewSet):
@@ -159,8 +158,8 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filterset_class = IngredientSearchFilter
     search_fields = ('$name',)
-    pagination_class = None
     permission_classes = (AllowAny,)
+    pagination_class = None
 
 
 class UserViewSet(UserViewSet):

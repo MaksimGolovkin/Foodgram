@@ -83,7 +83,8 @@ class Follow(models.Model):
             ),
             models.CheckConstraint(
                 check=~models.Q(subscriber=models.F('author')),
-                name='no_self_following')
+                name='no_self_following'
+            )
         ]
 
     def __str__(self):

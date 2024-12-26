@@ -85,15 +85,6 @@ class FavoriteAndShoppingCartSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class ShowFollowRecipesSerializer(serializers.ModelSerializer):
-    """Сериализатор для представления рецептов подписчиков."""
-
-    class Meta:
-        fields = ('id', 'tags', 'author', 'ingredients',
-                  'name', 'image', 'text', 'cooking_time')
-        model = Recipe
-
-
 class FollowShowSerializer(UserFoodgramSerializer):
     """Сериализатор отображения подписок."""
 
@@ -164,7 +155,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         serializer = FavoriteAndShoppingCartSerializer(
-            instance,
+            instance.recipe,
             context=self.context
         )
         return serializer.data
@@ -185,7 +176,7 @@ class ShoppingListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         serializer = FavoriteAndShoppingCartSerializer(
-            instance,
+            instance.recipe,
             context=self.context
         )
         return serializer.data

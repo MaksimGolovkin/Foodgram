@@ -15,7 +15,7 @@ services:
       - pg_data:/var/lib/postgresql/data/
 
   backend:
-    image: limonzzz/foodgram_backend
+    image: limonzzz/foodgram_backend:latest
     restart: always
     env_file: 
       - ./.env
