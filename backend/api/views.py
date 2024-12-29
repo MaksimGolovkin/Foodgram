@@ -146,7 +146,6 @@ class TagsViewSet(viewsets.ModelViewSet):
     serializer_class = TagsSerializer
     http_method_names = ('get',)
     permission_classes = (AllowAny,)
-    pagination_class = None
 
 
 class IngredientsViewSet(viewsets.ModelViewSet):
@@ -159,7 +158,6 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     filterset_class = IngredientSearchFilter
     search_fields = ('$name',)
     permission_classes = (AllowAny,)
-    pagination_class = None
 
 
 class UserViewSet(UserViewSet):
